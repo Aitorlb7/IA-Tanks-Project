@@ -17,6 +17,7 @@ public class Red_Tank_Behaviour : MonoBehaviour
     private float m_TurnInputValue;             // The current value of the turn input.
     private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
     private ParticleSystem[] m_particleSystems; // References to all the particles systems used by the Tanks
+    private GameObject m_Turret;
 
     private void Awake()
     {
@@ -59,7 +60,7 @@ public class Red_Tank_Behaviour : MonoBehaviour
 
     private void Start()
     {
-
+        m_Turret = gameObject.transform.Find("TankRenderers").transform.gameObject.transform.Find("TankTurret").transform.gameObject;
         // Store the original pitch of the audio source.
         m_OriginalPitch = m_MovementAudio.pitch;
     }
@@ -130,6 +131,8 @@ public class Red_Tank_Behaviour : MonoBehaviour
 
         // Apply this rotation to the rigidbody's rotation.
         m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
+
+        m_Turret.transform.LookAt(GameObject.Find("Blue_Tank").transform);
     }
 }
 

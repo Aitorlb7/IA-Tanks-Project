@@ -32,19 +32,22 @@ namespace Complete
             m_Shooting = m_Instance.GetComponent<TankShooting> ();
 
             //SetPlayers
-            if (m_PlayerNumber == 1)
-            {
-                m_Instance.name = ("Blue_Tank");
-                m_Blue_Behaviour = m_Instance.GetComponent<Blue_Tank_Behaviour>();
-                m_Blue_Behaviour.enabled = true;
-            }
-            if(m_PlayerNumber == 2)
-            {
-                m_Instance.name = ("Red_Tank");
-                m_Red_Behaviour = m_Instance.GetComponent<Red_Tank_Behaviour>();
-                m_Red_Behaviour.enabled = true;
-            }
 
+            switch (m_PlayerNumber)
+            {
+                case 1:
+                    m_Instance.name = ("Blue_Tank");
+                    m_Blue_Behaviour = m_Instance.GetComponent<Blue_Tank_Behaviour>();
+                    m_Blue_Behaviour.enabled = true;
+                    break;
+                case 2:
+                    m_Instance.name = ("Red_Tank");
+                    m_Red_Behaviour = m_Instance.GetComponent<Red_Tank_Behaviour>();
+                    m_Red_Behaviour.enabled = true;
+                    break;
+
+            }
+            
             m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas> ().gameObject;
 
             // Set the player numbers to be consistent across the scripts.
@@ -71,8 +74,18 @@ namespace Complete
         {
             //m_Movement.enabled = false;
             //m_Shooting.enabled = false;
-            m_Blue_Behaviour.enabled = false;
-            m_Red_Behaviour.enabled = false;
+            switch (m_PlayerNumber)
+            {
+                case 1:
+                     m_Blue_Behaviour.enabled = false;   
+
+                    break;
+
+                case 2:
+                    m_Red_Behaviour.enabled = false;
+
+                    break;
+            }
 
             m_CanvasGameObject.SetActive (false);
         }
@@ -83,8 +96,18 @@ namespace Complete
         {
             //m_Movement.enabled = true;
             //m_Shooting.enabled = true;
-            m_Blue_Behaviour.enabled = true;
-            m_Red_Behaviour.enabled = true;
+            switch (m_PlayerNumber)
+            {
+                case 1:
+                    m_Blue_Behaviour.enabled = true;
+
+                    break;
+
+                case 2:
+                    m_Red_Behaviour.enabled = true;
+
+                    break;
+            }
 
             m_CanvasGameObject.SetActive (true);
         }
