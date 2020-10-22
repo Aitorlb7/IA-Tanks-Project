@@ -69,8 +69,10 @@ namespace Complete
         // Used during the phases of the game where the player shouldn't be able to control their tank.
         public void DisableControl ()
         {
-            m_Movement.enabled = false;
-            m_Shooting.enabled = false;
+            //m_Movement.enabled = false;
+            //m_Shooting.enabled = false;
+            m_Blue_Behaviour.enabled = false;
+            m_Red_Behaviour.enabled = false;
 
             m_CanvasGameObject.SetActive (false);
         }
@@ -79,8 +81,10 @@ namespace Complete
         // Used during the phases of the game where the player should be able to control their tank.
         public void EnableControl ()
         {
-            m_Movement.enabled = true;
-            m_Shooting.enabled = true;
+            //m_Movement.enabled = true;
+            //m_Shooting.enabled = true;
+            m_Blue_Behaviour.enabled = true;
+            m_Red_Behaviour.enabled = true;
 
             m_CanvasGameObject.SetActive (true);
         }
