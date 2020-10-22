@@ -20,15 +20,31 @@ namespace Complete
         
 
         private TankMovement m_Movement;                        // Reference to tank's movement script, used to disable and enable control.
+        private Blue_Tank_Behaviour m_Blue_Behaviour;
+        private Red_Tank_Behaviour m_Red_Behaviour;
         private TankShooting m_Shooting;                        // Reference to tank's shooting script, used to disable and enable control.
         private GameObject m_CanvasGameObject;                  // Used to disable the world space UI during the Starting and Ending phases of each round.
-
 
         public void Setup ()
         {
             // Get references to the components.
             m_Movement = m_Instance.GetComponent<TankMovement> ();
             m_Shooting = m_Instance.GetComponent<TankShooting> ();
+
+            //SetPlayers
+            if (m_PlayerNumber == 1)
+            {
+                m_Instance.name = ("Blue_Tank");
+                m_Blue_Behaviour = m_Instance.GetComponent<Blue_Tank_Behaviour>();
+                m_Blue_Behaviour.enabled = true;
+            }
+            if(m_PlayerNumber == 2)
+            {
+                m_Instance.name = ("Red_Tank");
+                m_Red_Behaviour = m_Instance.GetComponent<Red_Tank_Behaviour>();
+                m_Red_Behaviour.enabled = true;
+            }
+
             m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas> ().gameObject;
 
             // Set the player numbers to be consistent across the scripts.
