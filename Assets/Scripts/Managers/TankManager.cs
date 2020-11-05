@@ -17,11 +17,10 @@ namespace Complete
         [HideInInspector] public string m_ColoredPlayerText;    // A string that represents the player with their number colored to match their tank.
         [HideInInspector] public GameObject m_Instance;         // A reference to the instance of the tank when it is created.
         [HideInInspector] public int m_Wins;                    // The number of wins this player has so far.
+
         
 
         private TankMovement m_Movement;                        // Reference to tank's movement script, used to disable and enable control.
-        private Blue_Tank_Behaviour m_Blue_Behaviour;
-        private Red_Tank_Behaviour m_Red_Behaviour;
         private TankShooting m_Shooting;                        // Reference to tank's shooting script, used to disable and enable control.
         private GameObject m_CanvasGameObject;                  // Used to disable the world space UI during the Starting and Ending phases of each round.
 
@@ -32,21 +31,6 @@ namespace Complete
             m_Shooting = m_Instance.GetComponent<TankShooting> ();
 
             //SetPlayers
-
-            switch (m_PlayerNumber)
-            {
-                case 1:
-                    m_Instance.name = ("Blue_Tank");
-                    m_Blue_Behaviour = m_Instance.GetComponent<Blue_Tank_Behaviour>();
-                    m_Blue_Behaviour.enabled = true;
-                    break;
-                case 2:
-                    m_Instance.name = ("Red_Tank");
-                    m_Red_Behaviour = m_Instance.GetComponent<Red_Tank_Behaviour>();
-                    m_Red_Behaviour.enabled = true;
-                    break;
-
-            }
             
             m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas> ().gameObject;
 
@@ -74,19 +58,6 @@ namespace Complete
         {
             //m_Movement.enabled = false;
             //m_Shooting.enabled = false;
-            switch (m_PlayerNumber)
-            {
-                case 1:
-                     m_Blue_Behaviour.enabled = false;   
-
-                    break;
-
-                case 2:
-                    m_Red_Behaviour.enabled = false;
-
-                    break;
-            }
-
             m_CanvasGameObject.SetActive (false);
         }
 
@@ -96,19 +67,6 @@ namespace Complete
         {
             //m_Movement.enabled = true;
             //m_Shooting.enabled = true;
-            switch (m_PlayerNumber)
-            {
-                case 1:
-                    m_Blue_Behaviour.enabled = true;
-
-                    break;
-
-                case 2:
-                    m_Red_Behaviour.enabled = true;
-
-                    break;
-            }
-
             m_CanvasGameObject.SetActive (true);
         }
 
