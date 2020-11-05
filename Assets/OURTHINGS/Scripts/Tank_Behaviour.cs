@@ -24,15 +24,21 @@ public class Tank_Behaviour : MonoBehaviour
     public UnityEngine.AI.NavMeshAgent Agent;
 
     //red
-    public UnityEngine.AI.NavMeshHit hit;
+    private float nextCheck;
+
     public float wanderRadius;
+    public bool rotate;
+    private Vector3 wanderTarget;
+    private Vector3 localRandomTarget;
     public RaycastHit hitInfo;
     public LineRenderer line;
     public float lineLenght;
 
+
     // Start is called before the first frame update
     void Start()
     {
+        rotate = false;
         Agent = gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
         Current_HP = HP;
         line = GetComponent<LineRenderer>();
@@ -41,22 +47,26 @@ public class Tank_Behaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+       
+       
         if (Input.GetKeyDown(KeyCode.N))
         {
             Current_HP -= 10;
             print(Current_HP);
         }
 
-        SetHealthUI();
-        if(blue_red)
+
+        if (blue_red)
         {
-            //BlueRoutine();
+            BlueRoutine();
         }
         else
         {
             RedRoutine();
         }
+
+        SetHealthUI();
+       
     }
 
     private void SetHealthUI()
@@ -126,30 +136,60 @@ public class Tank_Behaviour : MonoBehaviour
     void RedRoutine()
     {
 
-        Wander();
+        checkIfWander();
         
         Turret.transform.LookAt(GameObject.FindGameObjectWithTag("Blue").transform);
     }
 
-    void Wander()
+    void checkIfWander()
     {
-        //float radius = 2f;
+        float DistancefromBlue = Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Blue").transform.position);
+
+        if(DistancefromBlue > 15)
+        {
+            if (Time.time > nextCheck)
+            {
+
+                if (RandomWanderTarget(wanderRadius, out wanderTarget))
+                {
+                    Agent.SetDestination(wanderTarget);
+                }
+            }
+
+
+        }
+    }
+
+    bool RandomWanderTarget( float radius, out Vector3 result)
+    {
         float offset = 3f;
-        
-        Vector3 localTarget = new Vector3(
-            Random.Range(-1.0f, 1.0f), 0,
-            Random.Range(-1.0f, 1.0f));
-        localTarget.Normalize();
-        localTarget *= wanderRadius;
-        localTarget += new Vector3(0, 0, offset);
-
-
-        Vector3 worldTarget =
-            transform.TransformPoint(localTarget);
-        worldTarget.y = 0f;
 
         LineRaycast();
-        Agent.SetDestination(worldTarget);
+        if(!rotate)
+        {
+            localRandomTarget = new Vector3(
+            Random.Range(-1.0f, 1.0f), 0,
+            Random.Range(-1.0f, 1.0f));
+            localRandomTarget.Normalize();
+            localRandomTarget *= radius;
+            localRandomTarget += new Vector3(0, 0, offset);
+        }
+        else if (rotate)
+        {
+            localRandomTarget = new Vector3(Random.Range(-1.0f, 1.0f), 0, 0);
+            localRandomTarget.Normalize();
+            //localRandomTarget *= radius;
+            //localRandomTarget += new Vector3(0, 0, offset);
+
+            print(localRandomTarget);
+            nextCheck = Time.time + 0.7f;
+        }
+        Vector3 worldRandomTarget =
+        transform.TransformPoint(localRandomTarget);
+        worldRandomTarget.y = 0f;
+        result = worldRandomTarget;
+
+        return true;
 
     }
     void LineRaycast()
@@ -160,13 +200,14 @@ public class Tank_Behaviour : MonoBehaviour
             line.SetPosition(1, transform.position + transform.forward * lineLenght);
             if(Physics.Raycast(transform.position,transform.forward,out hitInfo, lineLenght))
             {
-                if(hitInfo.collider.gameObject.tag == "Collision")
+                if (hitInfo.collider.gameObject.tag == "Collision")
                 {
-                    if (Agent.isStopped == false) print(hitInfo.collider.gameObject.name);
-                    Agent.isStopped = true;
-                    
+                    rotate = true;
                 }
-
+            }
+            else
+            {
+                rotate = false;
             }
         }
 
