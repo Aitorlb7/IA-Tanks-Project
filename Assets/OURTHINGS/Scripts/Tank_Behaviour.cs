@@ -7,16 +7,15 @@ using UnityEngine.UI;
 public class Tank_Behaviour : MonoBehaviour
 {
     public GameObject Missile_prefab;
-    public float HP = 100f;
-    public float Current_HP;
+    private float HP = 100f;
+    private float Current_HP;
     public Image FillImage;
     public Slider SliderHealth;
     public Color FullHealth_Color;
     public Color ZeroHealth_Color = Color.black;
     public GameObject Explosion_Prefab;
-    public float Speed = 2;
-    public bool blue_red;
-    public bool death;  
+    public bool isBlue;
+    private bool death;  
     private GameObject Enemy_Target;
 
     //ShootSystem
@@ -26,16 +25,16 @@ public class Tank_Behaviour : MonoBehaviour
     private float Missile_Speed = 30f;
     private float Shoot_Timer;
 
-    //blue
+    //Blue --> Patrol
     public List<GameObject> Path_Points;
-    public int Current_Point;
+    private int Current_Point;
     public UnityEngine.AI.NavMeshAgent Agent;
 
-    //red
+    //Red --> Wander
     private float nextCheck;
     private float refreshWander;
     public float wanderRadius;
-    public bool rotate;
+    private bool rotate;
     private Vector3 wanderTarget;
     private Vector3 localRandomTarget;
     public RaycastHit hitInfo;
@@ -52,7 +51,7 @@ public class Tank_Behaviour : MonoBehaviour
         line = GetComponent<LineRenderer>();
         Shoot_Timer = UnityEngine.Random.Range(3f,5f);
 
-        if (blue_red)
+        if (isBlue)
             Enemy_Target = GameObject.FindGameObjectWithTag("Red");
         else
             Enemy_Target = GameObject.FindGameObjectWithTag("Blue");
@@ -67,15 +66,12 @@ public class Tank_Behaviour : MonoBehaviour
             Current_HP -= 10;
             print(Current_HP);
         }
-
-        if (blue_red)
-        {
+        if (isBlue)
             BlueRoutine();
-        }
+
         else
-        {
             RedRoutine();
-        }
+
         Turret.transform.LookAt(Enemy_Target.transform);
 
         SetHealthUI();
@@ -109,7 +105,6 @@ public class Tank_Behaviour : MonoBehaviour
             Patrol();
         }
 
-        //Turret.transform.LookAt(Enemy_Target.transform);
     }
 
     void FindPathPoints() //Find points from the scene to follow a path
@@ -140,13 +135,6 @@ public class Tank_Behaviour : MonoBehaviour
             }
     }
 
-    void GoToTank()
-    {
-        //transform.LookAt(GameObject.FindGameObjectWithTag("Red").transform);
-        //transform.Translate(Vector3.forward * Speed * Time.deltaTime);
-        Agent.destination = Enemy_Target.transform.position;
-    }
-
     //Red Behaviour
     void RedRoutine()
     {
@@ -157,28 +145,25 @@ public class Tank_Behaviour : MonoBehaviour
 
     void checkIfWander()
     {
-        float DistancefromBlue = Vector3.Distance(transform.position, Enemy_Target.transform.position);
-        refreshWander = UnityEngine.Random.Range(0.5f, 1.5f);
         LineRaycast();
-
-        if (DistancefromBlue > 15)
+        refreshWander = UnityEngine.Random.Range(0.5f, 1.5f);
+        if (Time.time > nextCheck)
         {
-            if (Time.time > nextCheck)
+            nextCheck = Time.time + refreshWander;
+
+            if (RandomWanderTarget(wanderRadius, out wanderTarget))
             {
-                nextCheck = Time.time + refreshWander;
-                
-                if (RandomWanderTarget(wanderRadius, out wanderTarget))
-                {
-                    Agent.SetDestination(wanderTarget);
-                }
+                Agent.SetDestination(wanderTarget);
             }
+            else
+                print("No Wander target found");
         }
+
     }
 
     bool RandomWanderTarget( float radius, out Vector3 result)
     {
         float offset = 9f;
-
 
         if(!rotate)
         {
@@ -193,10 +178,6 @@ public class Tank_Behaviour : MonoBehaviour
         {
             localRandomTarget = new Vector3(UnityEngine.Random.Range(-1.0f, 1.0f), 0, 0);
             localRandomTarget.Normalize();
-            //localRandomTarget *= radius;
-            //localRandomTarget += new Vector3(0, 0, offset);
-
-            print(localRandomTarget);
             nextCheck = Time.time + 0.7f;
         }
         Vector3 worldRandomTarget =
@@ -205,7 +186,6 @@ public class Tank_Behaviour : MonoBehaviour
         result = worldRandomTarget;
 
         return true;
-
     }
     void LineRaycast()
     {
@@ -215,19 +195,14 @@ public class Tank_Behaviour : MonoBehaviour
             line.SetPosition(1, transform.position + transform.forward * lineLenght);
             if(Physics.Raycast(transform.position,transform.forward,out hitInfo, lineLenght))
             {
-                if (hitInfo.collider.gameObject.tag == "Collision")
-                {
-                    rotate = true;
-                }
+                if (hitInfo.collider.gameObject.tag == "Collision") rotate = true;
             }
-            else
-            {
-                rotate = false;
-            }
+            else rotate = false;
         }  
     }
 
-    float CalculateShotAngle(float Bullet_Speed, Vector3 target) //FUNCIONA PERFECTO
+    //Shot Behaviour
+    float CalculateShotAngle(float Bullet_Speed, Vector3 target) //Calculations are correct
     {
         float distance = Vector3.Distance(Cannon.position, target);
         double parenthesis = Physics.gravity.y * (Math.Pow(distance, 2)); //g * x^2
