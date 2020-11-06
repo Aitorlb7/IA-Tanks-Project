@@ -30,7 +30,7 @@ public class Tank_Behaviour : MonoBehaviour
 
     //red
     private float nextCheck;
-
+    private float refreshWander;
     public float wanderRadius;
     public bool rotate;
     private Vector3 wanderTarget;
@@ -155,12 +155,15 @@ public class Tank_Behaviour : MonoBehaviour
     void checkIfWander()
     {
         float DistancefromBlue = Vector3.Distance(transform.position, Enemy_Target.transform.position);
+        refreshWander = UnityEngine.Random.Range(0.5f, 1.5f);
+        LineRaycast();
 
-        if(DistancefromBlue > 15)
+        if (DistancefromBlue > 15)
         {
             if (Time.time > nextCheck)
             {
-
+                nextCheck = Time.time + refreshWander;
+                
                 if (RandomWanderTarget(wanderRadius, out wanderTarget))
                 {
                     Agent.SetDestination(wanderTarget);
@@ -171,9 +174,9 @@ public class Tank_Behaviour : MonoBehaviour
 
     bool RandomWanderTarget( float radius, out Vector3 result)
     {
-        float offset = 3f;
+        float offset = 9f;
 
-        LineRaycast();
+
         if(!rotate)
         {
             localRandomTarget = new Vector3(
