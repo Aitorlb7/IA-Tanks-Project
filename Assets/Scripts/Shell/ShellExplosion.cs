@@ -19,7 +19,6 @@ namespace Complete
             Destroy (gameObject, m_MaxLifeTime);
         }
 
-
         private void OnTriggerEnter (Collider other)
         {
 			// Collect all the colliders in a sphere from the shell's current position to a radius of the explosion radius.
@@ -39,7 +38,7 @@ namespace Complete
                 targetRigidbody.AddExplosionForce (m_ExplosionForce, transform.position, m_ExplosionRadius);
 
                 // Find the TankHealth script associated with the rigidbody.
-                TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth> ();
+                Tank_Behaviour targetHealth = targetRigidbody.GetComponent<Tank_Behaviour> ();
 
                 // If there is no TankHealth script attached to the gameobject, go on to the next collider.
                 if (!targetHealth)

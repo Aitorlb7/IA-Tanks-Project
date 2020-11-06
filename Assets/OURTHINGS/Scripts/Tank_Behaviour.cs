@@ -15,13 +15,16 @@ public class Tank_Behaviour : MonoBehaviour
     public Color ZeroHealth_Color = Color.black;
     public GameObject Explosion_Prefab;
     public float Speed = 2;
-    public GameObject Turret; 
     public bool blue_red;
-    public bool death;
+    public bool death;  
+    private GameObject Enemy_Target;
+
+    //ShootSystem
+    public GameObject Turret; 
     public Transform Cannon;
     public Rigidbody Bullet;
-    private GameObject Enemy_Target;
-    private float Missile_Speed = 20f;
+    private float Missile_Speed = 30f;
+    private float Shoot_Timer;
 
     //blue
     public List<GameObject> Path_Points;
@@ -47,6 +50,7 @@ public class Tank_Behaviour : MonoBehaviour
         Agent = gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
         Current_HP = HP;
         line = GetComponent<LineRenderer>();
+        Shoot_Timer = UnityEngine.Random.Range(3f,5f);
 
         if (blue_red)
             Enemy_Target = GameObject.FindGameObjectWithTag("Red");
@@ -57,8 +61,7 @@ public class Tank_Behaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Turret.transform.LookAt(Enemy_Target.transform);
-
+        Shoot_Timer -= Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.N))
         {
             Current_HP -= 10;
@@ -73,6 +76,7 @@ public class Tank_Behaviour : MonoBehaviour
         {
             RedRoutine();
         }
+        Turret.transform.LookAt(Enemy_Target.transform);
 
         SetHealthUI();
        
@@ -94,12 +98,11 @@ public class Tank_Behaviour : MonoBehaviour
         FindPathPoints();
         float DistancefromRed = Vector3.Distance(transform.position, Enemy_Target.transform.position);
 
-        if(DistancefromRed < 100f)
+        if((DistancefromRed < 30f) && (Shoot_Timer <= 0))
         {
-            if(Input.GetKeyDown(KeyCode.H))
-            {
-                ShootMissile();
-            }
+            print("Able to shoot");
+            ShootMissile();
+            Shoot_Timer = UnityEngine.Random.Range(3f, 5f);
         }
         else
         {
@@ -240,9 +243,42 @@ public class Tank_Behaviour : MonoBehaviour
     {
         float X_Angle = CalculateShotAngle(Missile_Speed, Enemy_Target.transform.position);
         Turret.transform.Rotate(X_Angle, 0.0f, 0.0f);
-        Turret.transform.rotation = Quaternion.Euler(X_Angle, Turret.transform.rotation.eulerAngles.y, Turret.transform.rotation.eulerAngles.z);
         print("Turret ROT" + Turret.transform.eulerAngles);
         Rigidbody missile_inst = Instantiate(Bullet, Cannon.position, Cannon.rotation);
         missile_inst.velocity = Missile_Speed * Cannon.transform.forward;
+    }
+
+    public void TakeDamage(float amount)
+    {
+        // Reduce current health by the amount of damage done.
+        Current_HP -= amount;
+
+        // Change the UI elements appropriately.
+        SetHealthUI();
+
+        // If the current health is at or below zero and it has not yet been registered, call OnDeath.
+        if (Current_HP <= 0f && !death)
+        {
+            OnDeath();
+        }
+    }
+
+    private void OnDeath()
+    {
+        // Set the flag so that this function is only called once.
+        death = true;
+
+        //// Move the instantiated explosion prefab to the tank's position and turn it on.
+        //Explosion_Prefab.transform.position = transform.position;
+        //Explosion_Prefab.gameObject.SetActive(true);
+
+        //// Play the particle system of the tank exploding.
+        //Explosion_Prefab.Play();
+
+        //// Play the tank explosion sound effect.
+        //m_ExplosionAudio.Play();
+
+        // Turn the tank off.
+        gameObject.SetActive(false);
     }
 }
