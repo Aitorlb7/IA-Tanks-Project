@@ -6,17 +6,21 @@ using UnityEngine.UI;
 
 public class Tank_Behaviour : MonoBehaviour
 {
+    public Text Label;
     public GameObject Missile_prefab;
-    private float HP = 100f;
-    private float Current_HP;
+    [HideInInspector] public float HP = 100f;
+    public float Current_HP;
     public Image FillImage;
     public Slider SliderHealth;
     public Color FullHealth_Color;
     public Color ZeroHealth_Color = Color.black;
     public GameObject Explosion_Prefab;
     public bool isBlue;
-    private bool death;  
+    [HideInInspector] public bool isDead;
     private GameObject Enemy_Target;
+
+    //Rounds
+    [HideInInspector] public int Win_Count = 0;
 
     //ShootSystem
     public GameObject Turret; 
@@ -61,6 +65,7 @@ public class Tank_Behaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Label.transform.parent.gameObject.transform.LookAt(GameObject.Find("CameraRig/Main Camera").transform);
         Shoot_Timer -= Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.N))
         {
@@ -68,10 +73,15 @@ public class Tank_Behaviour : MonoBehaviour
             print(Current_HP);
         }
         if (isBlue)
+        {
+            Label.text = "Patrol";
             BlueRoutine();
-
+        }
         else
+        {
+            Label.text = "Wander";
             RedRoutine();
+        }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
@@ -92,7 +102,7 @@ public class Tank_Behaviour : MonoBehaviour
 
         if(Current_HP <= 0)
         {
-            Explosion_Prefab.SetActive(true);
+            OnDeath();
         }
     }
     //Blue Behaviour
@@ -100,10 +110,16 @@ public class Tank_Behaviour : MonoBehaviour
     {
         FindPathPoints();
         float DistancefromRed = Vector3.Distance(transform.position, Enemy_Target.transform.position);
-
-        if(Shoot_Timer <= 0) ShootMissile();
-
-        Patrol();
+        if (Shoot_Timer <= 0)
+        {
+            print("Able to shoot");
+            ShootMissile();
+            Shoot_Timer = UnityEngine.Random.Range(3f, 5f);
+        }
+        else
+        {
+            Patrol();
+        }
     }
 
     void FindPathPoints() //Find points from the scene to follow a path
@@ -254,7 +270,7 @@ public class Tank_Behaviour : MonoBehaviour
         SetHealthUI();
 
         // If the current health is at or below zero and it has not yet been registered, call OnDeath.
-        if (Current_HP <= 0f && !death)
+        if (Current_HP <= 0f && !isDead)
         {
             OnDeath();
         }
@@ -263,11 +279,11 @@ public class Tank_Behaviour : MonoBehaviour
     private void OnDeath()
     {
         // Set the flag so that this function is only called once.
-        death = true;
+        isDead = true;
 
         //// Move the instantiated explosion prefab to the tank's position and turn it on.
-        //Explosion_Prefab.transform.position = transform.position;
-        //Explosion_Prefab.gameObject.SetActive(true);
+        Explosion_Prefab.transform.position = transform.position;
+        Explosion_Prefab.gameObject.SetActive(true);
 
         //// Play the particle system of the tank exploding.
         //Explosion_Prefab.Play();
