@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,10 @@ public class Tank_Behaviour : MonoBehaviour
     public GameObject Turret; 
     public bool blue_red;
     public bool death;
+    public Transform Cannon;
+    public Rigidbody Bullet;
+    private GameObject Enemy_Target;
+    private float Missile_Speed = 20f;
 
     //blue
     public List<GameObject> Path_Points;
@@ -42,19 +47,23 @@ public class Tank_Behaviour : MonoBehaviour
         Agent = gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
         Current_HP = HP;
         line = GetComponent<LineRenderer>();
+
+        if (blue_red)
+            Enemy_Target = GameObject.FindGameObjectWithTag("Red");
+        else
+            Enemy_Target = GameObject.FindGameObjectWithTag("Blue");
     }
 
     // Update is called once per frame
     void Update()
     {
-       
-       
+        Turret.transform.LookAt(Enemy_Target.transform);
+
         if (Input.GetKeyDown(KeyCode.N))
         {
             Current_HP -= 10;
             print(Current_HP);
         }
-
 
         if (blue_red)
         {
@@ -83,18 +92,21 @@ public class Tank_Behaviour : MonoBehaviour
     void BlueRoutine()
     {
         FindPathPoints();
-        float DistancefromRed = Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Red").transform.position);
+        float DistancefromRed = Vector3.Distance(transform.position, Enemy_Target.transform.position);
 
-        if(DistancefromRed < 10f)
+        if(DistancefromRed < 100f)
         {
-            GoToTank();
+            if(Input.GetKeyDown(KeyCode.H))
+            {
+                ShootMissile();
+            }
         }
         else
         {
             Patrol();
         }
 
-        Turret.transform.LookAt(GameObject.FindGameObjectWithTag("Red").transform);
+        //Turret.transform.LookAt(Enemy_Target.transform);
     }
 
     void FindPathPoints() //Find points from the scene to follow a path
@@ -129,21 +141,20 @@ public class Tank_Behaviour : MonoBehaviour
     {
         //transform.LookAt(GameObject.FindGameObjectWithTag("Red").transform);
         //transform.Translate(Vector3.forward * Speed * Time.deltaTime);
-        Agent.destination = GameObject.FindGameObjectWithTag("Red").transform.position;
+        Agent.destination = Enemy_Target.transform.position;
     }
 
     //Red Behaviour
     void RedRoutine()
     {
-
         checkIfWander();
         
-        Turret.transform.LookAt(GameObject.FindGameObjectWithTag("Blue").transform);
+        Turret.transform.LookAt(Enemy_Target.transform);
     }
 
     void checkIfWander()
     {
-        float DistancefromBlue = Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Blue").transform.position);
+        float DistancefromBlue = Vector3.Distance(transform.position, Enemy_Target.transform.position);
 
         if(DistancefromBlue > 15)
         {
@@ -155,8 +166,6 @@ public class Tank_Behaviour : MonoBehaviour
                     Agent.SetDestination(wanderTarget);
                 }
             }
-
-
         }
     }
 
@@ -168,15 +177,15 @@ public class Tank_Behaviour : MonoBehaviour
         if(!rotate)
         {
             localRandomTarget = new Vector3(
-            Random.Range(-1.0f, 1.0f), 0,
-            Random.Range(-1.0f, 1.0f));
+            UnityEngine.Random.Range(-1.0f, 1.0f), 0,
+            UnityEngine.Random.Range(-1.0f, 1.0f));
             localRandomTarget.Normalize();
             localRandomTarget *= radius;
             localRandomTarget += new Vector3(0, 0, offset);
         }
         else if (rotate)
         {
-            localRandomTarget = new Vector3(Random.Range(-1.0f, 1.0f), 0, 0);
+            localRandomTarget = new Vector3(UnityEngine.Random.Range(-1.0f, 1.0f), 0, 0);
             localRandomTarget.Normalize();
             //localRandomTarget *= radius;
             //localRandomTarget += new Vector3(0, 0, offset);
@@ -209,14 +218,28 @@ public class Tank_Behaviour : MonoBehaviour
             {
                 rotate = false;
             }
-        }
-
-        
+        }  
     }
 
+    float CalculateShotAngle(float Bullet_Speed, Vector3 target) //FUNCIONA PERFECTO
+    {
+        float distance = Vector3.Distance(Cannon.position, target);
+        double parenthesis = Physics.gravity.y * (Math.Pow(distance, 2)); //g * x^2
+        double numerator = Math.Sqrt((Math.Pow(Bullet_Speed, 4) - Physics.gravity.y * (parenthesis))); //v^4 - g * (g*x^2)
+        float angle = (float)((Math.Pow(Bullet_Speed, 2) - numerator)) / (Physics.gravity.y * distance); //
 
-    //void Seek(Vector3 target)
-    //{
-    //    Agent.destination = target;
-    //}
+        angle = (float)Math.Atan(angle);
+        angle *= Mathf.Rad2Deg;
+        return angle;
+    }
+
+    void ShootMissile()
+    {
+        float X_Angle = CalculateShotAngle(Missile_Speed, Enemy_Target.transform.position);
+        Turret.transform.Rotate(X_Angle, 0.0f, 0.0f);
+        Turret.transform.rotation = Quaternion.Euler(X_Angle, Turret.transform.rotation.eulerAngles.y, Turret.transform.rotation.eulerAngles.z);
+        print("Turret ROT" + Turret.transform.eulerAngles);
+        Rigidbody missile_inst = Instantiate(Bullet, Cannon.position, Cannon.rotation);
+        missile_inst.velocity = Missile_Speed * Cannon.transform.forward;
+    }
 }
