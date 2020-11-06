@@ -22,7 +22,7 @@ public class Tank_Behaviour : MonoBehaviour
     public GameObject Turret; 
     public Transform Cannon;
     public Rigidbody Bullet;
-    private float Missile_Speed = 30f;
+    public float Missile_Speed;
     private float Shoot_Timer;
 
     //Blue --> Patrol
@@ -46,10 +46,11 @@ public class Tank_Behaviour : MonoBehaviour
     void Start()
     {
         rotate = false;
+        Missile_Speed = 20.0f;
         Agent = gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
         Current_HP = HP;
         line = GetComponent<LineRenderer>();
-        Shoot_Timer = UnityEngine.Random.Range(3f,5f);
+        Shoot_Timer = UnityEngine.Random.Range(2f, 4f);
 
         if (isBlue)
             Enemy_Target = GameObject.FindGameObjectWithTag("Red");
@@ -72,7 +73,13 @@ public class Tank_Behaviour : MonoBehaviour
         else
             RedRoutine();
 
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            Agent.isStopped = !Agent.isStopped;
+        }
+
         Turret.transform.LookAt(Enemy_Target.transform);
+
 
         SetHealthUI();
        
@@ -94,17 +101,9 @@ public class Tank_Behaviour : MonoBehaviour
         FindPathPoints();
         float DistancefromRed = Vector3.Distance(transform.position, Enemy_Target.transform.position);
 
-        if((DistancefromRed < 30f) && (Shoot_Timer <= 0))
-        {
-            print("Able to shoot");
-            ShootMissile();
-            Shoot_Timer = UnityEngine.Random.Range(3f, 5f);
-        }
-        else
-        {
-            Patrol();
-        }
+        if(Shoot_Timer <= 0) ShootMissile();
 
+        Patrol();
     }
 
     void FindPathPoints() //Find points from the scene to follow a path
@@ -138,8 +137,11 @@ public class Tank_Behaviour : MonoBehaviour
     //Red Behaviour
     void RedRoutine()
     {
+
+        if (Shoot_Timer <= 0) ShootMissile();
+
         checkIfWander();
-        
+
         Turret.transform.LookAt(Enemy_Target.transform);
     }
 
@@ -205,22 +207,42 @@ public class Tank_Behaviour : MonoBehaviour
     float CalculateShotAngle(float Bullet_Speed, Vector3 target) //Calculations are correct
     {
         float distance = Vector3.Distance(Cannon.position, target);
-        double parenthesis = Physics.gravity.y * (Math.Pow(distance, 2)); //g * x^2
-        double numerator = Math.Sqrt((Math.Pow(Bullet_Speed, 4) - Physics.gravity.y * (parenthesis))); //v^4 - g * (g*x^2)
-        float angle = (float)((Math.Pow(Bullet_Speed, 2) - numerator)) / (Physics.gravity.y * distance); //
 
-        angle = (float)Math.Atan(angle);
-        angle *= Mathf.Rad2Deg;
-        return angle;
+        float parenthesis = Physics.gravity.y * distance * distance; //g * x^2
+
+        double numerator = Math.Sqrt(Math.Pow(Bullet_Speed, 4) - (Physics.gravity.y * parenthesis)); //v^4 - g * (g*x^2)
+
+        double ATangle = ((Math.Pow(Bullet_Speed, 2)) - numerator) / (Physics.gravity.y * distance); //
+
+        double angle = Math.Atan(ATangle);
+
+        float result = (float)angle * Mathf.Rad2Deg;
+
+
+        print("Angle in Degrees");
+        print(result); 
+        return result;
     }
 
     void ShootMissile()
     {
         float X_Angle = CalculateShotAngle(Missile_Speed, Enemy_Target.transform.position);
+        
+        if(float.IsNaN(Math.Abs(X_Angle)))
+        {
+            print("Target out of range");
+            return;
+        }
+        
         Turret.transform.Rotate(X_Angle, 0.0f, 0.0f);
+
+
         print("Turret ROT" + Turret.transform.eulerAngles);
-        Rigidbody missile_inst = Instantiate(Bullet, Cannon.position, Cannon.rotation);
-        missile_inst.velocity = Missile_Speed * Cannon.transform.forward;
+
+        Rigidbody missile_inst = Instantiate(Bullet, Cannon.position, Cannon.rotation) as Rigidbody;
+        missile_inst.velocity = Missile_Speed * Cannon.forward;
+
+        Shoot_Timer = UnityEngine.Random.Range(2f, 4f);
     }
 
     public void TakeDamage(float amount)
