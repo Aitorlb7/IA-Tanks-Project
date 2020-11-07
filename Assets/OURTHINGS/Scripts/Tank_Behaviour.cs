@@ -50,7 +50,6 @@ public class Tank_Behaviour : MonoBehaviour
     void Start()
     {
         rotate = false;
-        Missile_Speed = 20.0f;
         Agent = gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
         Current_HP = HP;
         line = GetComponent<LineRenderer>();
