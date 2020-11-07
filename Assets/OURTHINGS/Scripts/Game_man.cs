@@ -11,6 +11,8 @@ public class Game_man : MonoBehaviour
     public Text Message;
     public Text Rounds_num_Text;
     public Button NextRound_Button;
+    public Button Restart_Button;
+    public Text Victory_count;
     //----------
     public struct Timer
     {
@@ -55,24 +57,43 @@ public class Game_man : MonoBehaviour
             num_Rounds++;
             Message.text = string.Empty;
             Start_Time.time = 3;
+            Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count + " - " + Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count + " BLUE";
             Start_Time.enabled = false;
         }
 
-        if(Start_Time.enabled == false) //Round
+        if(Start_Time.enabled == false) //Rounds
         {
             if(Current_Tanks[0].GetComponent<Tank_Behaviour>().isDead == true) // When Blue dies
             {
                 Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count++;
+                Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count + " - " + Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count + " BLUE";
                 Message.text = "Red Wins";
                 Current_Tanks[1].SetActive(false);
                 NextRound_Button.gameObject.SetActive(true);
+                Current_Tanks[0].GetComponent<Tank_Behaviour>().isDead = false;
             }
             if (Current_Tanks[1].GetComponent<Tank_Behaviour>().isDead == true) // When Red dies
             {
                 Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count++;
+                Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count + " - " + Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count + " BLUE";
                 Message.text = "Blue Wins";
                 Current_Tanks[0].SetActive(false);
                 NextRound_Button.gameObject.SetActive(true);
+                Current_Tanks[1].GetComponent<Tank_Behaviour>().isDead = false;
+            }
+
+            for(int i = 0; i < 2; i++)
+            {
+                if(Current_Tanks[i].GetComponent<Tank_Behaviour>().Win_Count >= 3)
+                {
+                    if (Current_Tanks[i].GetComponent<Tank_Behaviour>().isBlue)
+                        Message.text = "Blue wins the game";
+                    else
+                        Message.text = "Red wins the game";
+
+                    NextRound_Button.gameObject.SetActive(false);
+                    Restart_Button.gameObject.SetActive(true);
+                }
             }
         }
     }
@@ -97,11 +118,16 @@ public class Game_man : MonoBehaviour
         Camera.Tanks[1] = Current_Tanks[1];
     }
 
-    void RestartRound()
+    public void RestartGame()
     {
-
+        for (int i = 0; i < 2; i++)
+        {
+            Object.Destroy(Current_Tanks[i]);
+            num_Rounds = 0;
+            Start_Time.enabled = true;
+        }
+        Restart_Button.gameObject.SetActive(false);
     }
-
     public void GoToNextRound()
     {
         num_Rounds++;
