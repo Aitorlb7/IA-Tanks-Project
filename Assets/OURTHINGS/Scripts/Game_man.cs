@@ -13,6 +13,7 @@ public class Game_man : MonoBehaviour
     public Button NextRound_Button;
     public Button Restart_Button;
     public Text Victory_count;
+    public Text BlueMuni_text, RedMuni_text;
     //----------
     public struct Timer
     {
@@ -63,6 +64,24 @@ public class Game_man : MonoBehaviour
 
         if(Start_Time.enabled == false) //Rounds
         {
+            if(Current_Tanks[0].GetComponent<Tank_Behaviour>().Current_num_bullets <= 0) // When blue recharge
+            {
+                BlueMuni_text.text = "" + (int)Current_Tanks[0].GetComponent<Tank_Behaviour>().Recharge_Timer;
+            }
+            else
+            {
+                 BlueMuni_text.text = "" + Current_Tanks[0].GetComponent<Tank_Behaviour>().Current_num_bullets;
+            } 
+            
+            if(Current_Tanks[0].GetComponent<Tank_Behaviour>().Current_num_bullets <= 0) // When blue recharge
+            {
+                RedMuni_text.text = "" + (int)Current_Tanks[1].GetComponent<Tank_Behaviour>().Recharge_Timer;
+            }
+            else  
+            {
+                RedMuni_text.text = "" + Current_Tanks[1].GetComponent<Tank_Behaviour>().Current_num_bullets;
+            }       
+
             if(Current_Tanks[0].GetComponent<Tank_Behaviour>().isDead == true) // When Blue dies
             {
                 Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count++;

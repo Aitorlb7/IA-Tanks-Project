@@ -19,6 +19,11 @@ public class Tank_Behaviour : MonoBehaviour
     [HideInInspector] public bool isDead;
     private GameObject Enemy_Target;
 
+    //Recharge
+    [HideInInspector] public int Current_num_bullets;
+    private int Max_num_bullets = 8;
+    [HideInInspector] public float Recharge_Timer = 8f;
+
     //Rounds
     [HideInInspector] public int Win_Count = 0;
 
@@ -54,6 +59,7 @@ public class Tank_Behaviour : MonoBehaviour
         Current_HP = HP;
         line = GetComponent<LineRenderer>();
         Shoot_Timer = UnityEngine.Random.Range(2f, 4f);
+        Current_num_bullets = Max_num_bullets;
 
         if (isBlue)
             Enemy_Target = GameObject.FindGameObjectWithTag("Red");
@@ -111,7 +117,6 @@ public class Tank_Behaviour : MonoBehaviour
         float DistancefromRed = Vector3.Distance(transform.position, Enemy_Target.transform.position);
         if (Shoot_Timer <= 0)
         {
-            print("Able to shoot");
             ShootMissile();
             Shoot_Timer = UnityEngine.Random.Range(3f, 5f);
         }
@@ -233,31 +238,39 @@ public class Tank_Behaviour : MonoBehaviour
 
         float result = (float)angle * Mathf.Rad2Deg;
 
-
-        print("Angle in Degrees");
-        print(result); 
         return result;
     }
 
     void ShootMissile()
     {
-        float X_Angle = CalculateShotAngle(Missile_Speed, Enemy_Target.transform.position);
-        
-        if(float.IsNaN(Math.Abs(X_Angle)))
+        if (Current_num_bullets > 0)
         {
-            print("Target out of range");
-            return;
+            Recharge_Timer = 0f;
+            float X_Angle = CalculateShotAngle(Missile_Speed, Enemy_Target.transform.position);
+
+            if (float.IsNaN(Math.Abs(X_Angle)))
+            {
+                print("Target out of range");
+                return;
+            }
+
+            Turret.transform.Rotate(X_Angle, 0.0f, 0.0f);
+
+            Rigidbody missile_inst = Instantiate(Bullet, Cannon.position, Cannon.rotation) as Rigidbody;
+            missile_inst.velocity = Missile_Speed * Cannon.forward;
+
+            Shoot_Timer = UnityEngine.Random.Range(2f, 4f);
+            Current_num_bullets--;
         }
-        
-        Turret.transform.Rotate(X_Angle, 0.0f, 0.0f);
-
-
-        print("Turret ROT" + Turret.transform.eulerAngles);
-
-        Rigidbody missile_inst = Instantiate(Bullet, Cannon.position, Cannon.rotation) as Rigidbody;
-        missile_inst.velocity = Missile_Speed * Cannon.forward;
-
-        Shoot_Timer = UnityEngine.Random.Range(2f, 4f);
+        if(Current_num_bullets <= 0)//recharging
+        {
+            print(Recharge_Timer + name);
+            Recharge_Timer += Time.time;
+            if(Recharge_Timer >= 8)
+            {
+                Current_num_bullets = Max_num_bullets;      
+            }
+        }
     }
 
     public void TakeDamage(float amount)
