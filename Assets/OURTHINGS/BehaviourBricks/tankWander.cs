@@ -46,16 +46,10 @@ public class tankWander : GOAction
     void checkIfWander()
     {
         LineRaycast();
-        refreshWander = UnityEngine.Random.Range(0.5f, 1.5f);
-        if (Time.time > nextCheck)
-        {
-            nextCheck = Time.time + refreshWander;
 
-            if (RandomWanderTarget(wanderRadius, out wanderTarget))
-            {
-                Agent.SetDestination(wanderTarget);
-                Debug.Log(wanderTarget);
-            }
+        if (RandomWanderTarget(wanderRadius, out wanderTarget))
+        {
+            Agent.SetDestination(wanderTarget);
         }
 
     }
