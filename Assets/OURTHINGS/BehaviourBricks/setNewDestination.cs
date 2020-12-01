@@ -8,44 +8,42 @@ using Pada1.BBCore.Tasks;     // TaskStatus
 using BBUnity.Actions;        // GOAction
 
 
-[Action("MyActions/tankWander")]
+[Action("MyActions/setNewDestination")]
 [Help("Calculate a random postion ahead of the tank and sets destination.")]
 
-public class tankWander : GOAction
+public class setNewDestination : GOAction
 {
     private float nextCheck;
-    private float refreshWander;
     public float wanderRadius;
-    private bool rotate;
-    private Vector3 wanderTarget;
     private Vector3 localRandomTarget;
     public RaycastHit hitInfo;
-    public LineRenderer line;
-    public float lineLenght;
     public UnityEngine.AI.NavMeshAgent Agent;
+
+
+    [InParam("Rotate")]
+    [Help("If raycast hit rotate the tank")]
+    public bool rotate;
+
+    [OutParam("WanderTarget")]
+    [Help("New destination for the tank")]
+    public Vector3 wanderTarget;
 
     public override void OnStart()
     {
         Agent = gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        nextCheck = 0;
         wanderRadius = 3;
-        lineLenght = 6;
-        line = gameObject.GetComponent<LineRenderer>();
-
-        Debug.Log(wanderRadius);
     }
 
     // Update is called once per frame
     public override TaskStatus OnUpdate()
     {
-        checkIfWander();
+        RandomWanderTarget(wanderRadius, out wanderTarget);
         return TaskStatus.COMPLETED;
     }
 
 
     void checkIfWander()
     {
-        LineRaycast();
 
         if (RandomWanderTarget(wanderRadius, out wanderTarget))
         {
@@ -78,19 +76,6 @@ public class tankWander : GOAction
         result = worldRandomTarget;
 
         return true;
-    }
-    void LineRaycast()
-    {
-        if (line.enabled)
-        {
-            line.SetPosition(0, gameObject.transform.position);
-            line.SetPosition(1, gameObject.transform.position + gameObject.transform.forward * lineLenght);
-            if (Physics.Raycast(gameObject.transform.position, gameObject.transform.forward, out hitInfo, lineLenght))
-            {
-                if (hitInfo.collider.gameObject.tag == "Collision") rotate = true;
-            }
-            else rotate = false;
-        }
     }
 }
 
