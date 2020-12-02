@@ -61,7 +61,7 @@ public class Tank_Behaviour : MonoBehaviour
         Shoot_Timer = UnityEngine.Random.Range(2f, 4f);
         Current_num_bullets = Max_num_bullets;
 
-        if (isBlue)
+        if (gameObject.tag == "Blue")
             Enemy_Target = GameObject.FindGameObjectWithTag("Red");
         else
             Enemy_Target = GameObject.FindGameObjectWithTag("Blue");

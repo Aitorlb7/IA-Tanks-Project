@@ -38,7 +38,6 @@ public class moveToDestination : GOAction
     // Update is called once per frame
     public override TaskStatus OnUpdate()
     {
-        Debug.Log("Enemy position");
         Debug.Log(enemyTarget.transform.position);
 
         Debug.Log("Ally tank position");

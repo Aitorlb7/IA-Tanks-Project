@@ -39,14 +39,9 @@ public class calculateAngle : GOAction
     // Update is called once per frame
     public override TaskStatus OnUpdate()
     {
-
-
         angle = CalculateShotAngle(bulletSpeed, enemyTarget.transform.position);
 
-
-
         return TaskStatus.COMPLETED;
-
     }
 
 
