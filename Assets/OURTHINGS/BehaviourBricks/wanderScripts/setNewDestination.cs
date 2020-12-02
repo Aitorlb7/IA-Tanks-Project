@@ -41,17 +41,6 @@ public class setNewDestination : GOAction
         return TaskStatus.COMPLETED;
     }
 
-
-    void checkIfWander()
-    {
-
-        if (RandomWanderTarget(wanderRadius, out wanderTarget))
-        {
-            Agent.SetDestination(wanderTarget);
-        }
-
-    }
-
     bool RandomWanderTarget(float radius, out Vector3 result)
     {
         float offset = 9f;

@@ -37,10 +37,15 @@ public class hitRaycast : GOAction
             line.SetPosition(1, gameObject.transform.position + gameObject.transform.forward * lineLenght);
             if (Physics.Raycast(gameObject.transform.position, gameObject.transform.forward, out hitInfo, lineLenght))
             {
-                if (hitInfo.collider.gameObject.tag == "Collision") rotate = true;
+                if (hitInfo.collider.gameObject.tag == "Collision")
+                {
+                    
+                    rotate = true;
+                }
             }
             else rotate = false;
         }
+
     }
 
  
