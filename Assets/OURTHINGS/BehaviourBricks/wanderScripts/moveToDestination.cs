@@ -21,13 +21,7 @@ public class moveToDestination : GOAction
     [Help("New destination for the tank")]
     public Vector3 wanderTarget;
 
-    [InParam("enemyTarget")]
-    [Help("Target to shoot at")]
-    public GameObject enemyTarget;
 
-    [InParam("Turret")]
-    [Help("Angle needed to fire the bullet")]
-    public GameObject Turret;
 
 
     public override void OnStart()
@@ -38,12 +32,8 @@ public class moveToDestination : GOAction
     // Update is called once per frame
     public override TaskStatus OnUpdate()
     {
-        Debug.Log(enemyTarget.transform.position);
 
-        Debug.Log("Ally tank position");
-        Debug.Log(this.gameObject.transform.position);
 
-        Turret.transform.LookAt(enemyTarget.transform);
         Agent.SetDestination(wanderTarget);
         return TaskStatus.COMPLETED;
     }
