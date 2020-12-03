@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System;
 using Pada1.BBCore;
 using Pada1.BBCore.Framework;
 
@@ -7,33 +7,28 @@ using Pada1.BBCore.Framework;
 [Help("Checks whether the tank has ammo.")]
 public class tankHasAmmo : ConditionBase
 {
-    [OutParam("checkAmmo")]
-    [Help("bulletSpeed needed to fire the bullet")]
-    public bool checkAmmo;
 
-    [InParam("Ammunition", DefaultValue = 5)]
-    public int Ammunition;
+    private int Ammo;
 
-    [InParam("TotalAmmo")]
-    public int TotalAmmo;
-
+    [InParam("enemyTarget")]
+    [Help("Target to shoot at")]
+    public GameObject enemyTarget;
     public override bool Check()
     {
-
-
-
-        if (Ammunition > 0)
+        Ammo = enemyTarget.gameObject.GetComponent<Variables>().Ammunition;
+        Debug.Log(Ammo);
+        if (Ammo > 0)
         {
-            checkAmmo = true;
-        }
-        else if (Ammunition <= 0)
-        {
-            checkAmmo = false;
+            Ammo--;
+            enemyTarget.gameObject.GetComponent<Variables>().Ammunition = Ammo;
+            return true;
             
         }
-
-        Debug.Log(Ammunition);
-
-        return checkAmmo;
+        else if (Ammo <= 0)
+        {
+            return false;
+            
+        }
+        return false;
     }
 }

@@ -6,6 +6,7 @@ public class Variables : MonoBehaviour
 {
     public int Current_Point;
     public float DistancePoint = 5f;
+    public int Ammunition = 5;
     // Start is called before the first frame update
     void Start()
     {
