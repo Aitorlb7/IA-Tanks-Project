@@ -62,6 +62,8 @@ public class shootBullet : GOAction
         Rigidbody missile_inst = UnityEngine.Object.Instantiate(Bullet, Cannon.position, Cannon.rotation) as Rigidbody;
         missile_inst.velocity = bulletSpeed * Cannon.forward;
 
+        if(gameObject.GetComponent<Variables>().Ammunition > 0)
+            gameObject.GetComponent<Variables>().Ammunition--;
     }
 }
 

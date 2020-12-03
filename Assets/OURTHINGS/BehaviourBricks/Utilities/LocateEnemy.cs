@@ -17,6 +17,9 @@ public class LocateEnemy : GOAction
     [Help("Target to shoot at")]
     public GameObject enemyTarget;
 
+    [OutParam("Ammunition")]
+    public int Ammo;
+
     // Start is called before the first frame update
     public override void OnStart()
     {
@@ -30,6 +33,7 @@ public class LocateEnemy : GOAction
     // Update is called once per frame
     public override TaskStatus OnUpdate()
     {
+        Ammo = gameObject.GetComponent<Variables>().Ammunition;
         return TaskStatus.COMPLETED;
     }
 }

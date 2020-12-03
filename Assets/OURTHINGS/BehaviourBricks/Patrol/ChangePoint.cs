@@ -24,7 +24,7 @@ public class ChangePoint : GOAction
     public override TaskStatus OnUpdate()
     {
         int Current_Point = gameObject.GetComponent<Variables>().Current_Point;
-        if (Current_Point > 6)
+        if (Current_Point > 3)
         {
             Current_Point = 0;
         }
