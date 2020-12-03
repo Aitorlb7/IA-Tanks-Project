@@ -31,6 +31,14 @@ public class shootBullet : GOAction
     [InParam("Bullet")]
     [Help("Angle needed to fire the bullet")]
     public Rigidbody Bullet;
+
+    [InParam("TotalAmmo")]
+    public int TotalAmmo;
+
+    [OutParam("Ammunition")]
+    [Help("Remaining ammo")]
+    public int Ammunition;
+
     public override void OnStart()
     {
 
@@ -39,7 +47,10 @@ public class shootBullet : GOAction
     // Update is called once per frame
     public override TaskStatus OnUpdate()
     {
+        
         ShootMissile();
+
+
         return TaskStatus.COMPLETED;
 
     }
@@ -57,6 +68,9 @@ public class shootBullet : GOAction
 
         Rigidbody missile_inst = UnityEngine.Object.Instantiate(Bullet, Cannon.position, Cannon.rotation) as Rigidbody;
         missile_inst.velocity = bulletSpeed * Cannon.forward;
+
+        Ammunition--;
+
     }
 }
 
