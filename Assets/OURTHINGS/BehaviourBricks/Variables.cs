@@ -10,7 +10,8 @@ public class Variables : MonoBehaviour
     [HideInInspector] public float DistancePoint = 5f;
     [HideInInspector] public int Ammunition = 5;
     public GameObject EnemyGO;
-    [HideInInspector] public bool IsEmpty;
+    public GameObject Base;
+    [HideInInspector] public bool IsEmpty = false;
     public GameObject Explosion_Prefab;
 
     //LifeSystem
@@ -25,6 +26,8 @@ public class Variables : MonoBehaviour
     //Rounds
     [HideInInspector] public int Win_Count = 0;
 
+    public List<GameObject> Ammo_Images;
+
     void Start()
     {
         ShootTimer = UnityEngine.Random.Range(2f, 4f);
@@ -32,6 +35,21 @@ public class Variables : MonoBehaviour
         Current_HP = HP;
         Ammunition = 5;
         IsEmpty = false;
+
+        for (int i = 0; i < 5; i++)
+        {
+            if(gameObject.tag == "Red")
+                Ammo_Images.Add(GameObject.Find("MessageCanvas").transform.Find("RedMuni").transform.GetChild(i).transform.gameObject);
+
+            if (gameObject.tag == "Blue")
+                Ammo_Images.Add(GameObject.Find("MessageCanvas").transform.Find("BlueMuni").transform.GetChild(i).transform.gameObject);
+        }
+
+        if (gameObject.tag == "Red")
+            Base = GameObject.Find("RedBase").gameObject;
+
+        if (gameObject.tag == "Blue")
+            Base = GameObject.Find("BlueBase").gameObject;
     }
 
     void Update()
@@ -44,6 +62,7 @@ public class Variables : MonoBehaviour
 
         if(Ammunition <= 0)
         {
+            Ammunition = 0;
             IsEmpty = true;
         }
 

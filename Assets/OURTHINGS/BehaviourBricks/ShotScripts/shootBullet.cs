@@ -64,7 +64,10 @@ public class shootBullet : GOAction
         missile_inst.velocity = bulletSpeed * Cannon.forward;
 
         if(gameObject.GetComponent<Variables>().Ammunition > 0)
+        {
             gameObject.GetComponent<Variables>().Ammunition--;
+            gameObject.GetComponent<Variables>().Ammo_Images[gameObject.GetComponent<Variables>().Ammunition].SetActive(false);
+        }
     }
 }
 

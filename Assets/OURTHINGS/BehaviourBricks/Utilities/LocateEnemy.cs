@@ -22,6 +22,9 @@ public class LocateEnemy : GOAction
 
     [OutParam("IsEmpty")]
     public bool IsEmpty;
+    
+    [OutParam("Base")]
+    public GameObject Base;
 
     // Start is called before the first frame update
     public override void OnStart()
@@ -31,6 +34,8 @@ public class LocateEnemy : GOAction
 
         if(gameObject.tag == "Red")
             enemyTarget = GameObject.FindGameObjectWithTag("Blue");
+
+        Base = gameObject.GetComponent<Variables>().Base;
     }
 
     // Update is called once per frame

@@ -112,8 +112,7 @@ public class Game_man : MonoBehaviour
             }
         }
     }
-
-
+        
     private void SetSpawnPoints()
     {
         for (int i = 0; i < GameObject.Find("Red_Points").transform.childCount; i++)
@@ -153,10 +152,18 @@ public class Game_man : MonoBehaviour
         Current_Tanks[1].transform.position = Red_Spawnpoints[1].transform.position;
         Current_Tanks[0].GetComponent<Variables>().isDead = false;
         Current_Tanks[1].GetComponent<Variables>().isDead = false;
+        Current_Tanks[0].GetComponent<Variables>().Ammunition = 0;
+        Current_Tanks[1].GetComponent<Variables>().Ammunition = 0;
         BlueMuni_text.gameObject.SetActive(true);
         RedMuni_text.gameObject.SetActive(true);
         Current_Tanks[0].SetActive(true);
         Current_Tanks[1].SetActive(true);
+
+        for (int i = 0; i < 5; i++)
+        {
+            Current_Tanks[0].GetComponent<Variables>().Ammo_Images[i].SetActive(false);
+            Current_Tanks[1].GetComponent<Variables>().Ammo_Images[i].SetActive(false);
+        }
 
         Message.text = string.Empty;
 

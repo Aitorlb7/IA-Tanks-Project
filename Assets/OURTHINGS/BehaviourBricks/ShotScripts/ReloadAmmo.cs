@@ -22,6 +22,7 @@ public class ReloadAmmo : GOAction
         Timer += Time.time;
         if(Timer >= 30f)
         {
+            gameObject.GetComponent<Variables>().Ammo_Images[gameObject.GetComponent<Variables>().Ammunition].SetActive(true);
             gameObject.GetComponent<Variables>().Ammunition++;
             Timer = 0;
         }

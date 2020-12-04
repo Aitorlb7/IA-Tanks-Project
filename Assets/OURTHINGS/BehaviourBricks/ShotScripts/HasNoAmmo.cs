@@ -3,15 +3,15 @@ using System;
 using Pada1.BBCore;
 using Pada1.BBCore.Framework;
 
-[Condition("MyConditions/TankHasAmmo")]
-[Help("Checks whether the tank has ammo.")]
-public class tankHasAmmo : ConditionBase
+[Condition("MyConditions/TankHasNoAmmo")]
+[Help("Checks whether the tank has no ammo.")]
+public class HasNoAmmo : ConditionBase
 {
     [InParam("IsEmpty")]
     public bool IsEmpty;
 
     public override bool Check()
     {
-        return IsEmpty == false;
+        return IsEmpty == true;
     }
 }
