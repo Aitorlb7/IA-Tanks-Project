@@ -40,12 +40,13 @@ public class shootBullet : GOAction
     // Update is called once per frame
     public override TaskStatus OnUpdate()
     {
-        
-        ShootMissile();
-
+        if (gameObject.GetComponent<Variables>().ShootTimer <= 0)
+        {
+            ShootMissile();
+            gameObject.GetComponent<Variables>().ShootTimer = UnityEngine.Random.Range(3f, 5f);
+        }
 
         return TaskStatus.COMPLETED;
-
     }
 
 

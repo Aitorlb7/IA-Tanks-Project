@@ -58,56 +58,52 @@ public class Game_man : MonoBehaviour
             num_Rounds++;
             Message.text = string.Empty;
             Start_Time.time = 3;
-            Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count + " - " + Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count + " BLUE";
+            Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Variables>().Win_Count + " - " + Current_Tanks[0].GetComponent<Variables>().Win_Count + " BLUE";
+            BlueMuni_text.gameObject.SetActive(true);
+            RedMuni_text.gameObject.SetActive(true);
             Start_Time.enabled = false;
         }
 
         if(Start_Time.enabled == false) //Rounds
         {
-            if(Current_Tanks[0].GetComponent<Tank_Behaviour>().Current_num_bullets <= 0) // When blue recharge
-            {
-                BlueMuni_text.text = "" + (int)Current_Tanks[0].GetComponent<Tank_Behaviour>().Recharge_Timer;
-            }
-            else
-            {
-                 BlueMuni_text.text = "" + Current_Tanks[0].GetComponent<Tank_Behaviour>().Current_num_bullets;
-            } 
-            
-            if(Current_Tanks[0].GetComponent<Tank_Behaviour>().Current_num_bullets <= 0) // When blue recharge
-            {
-                RedMuni_text.text = "" + (int)Current_Tanks[1].GetComponent<Tank_Behaviour>().Recharge_Timer;
-            }
-            else  
-            {
-                RedMuni_text.text = "" + Current_Tanks[1].GetComponent<Tank_Behaviour>().Current_num_bullets;
-            }       
+            BlueMuni_text.text = "" + (int)Current_Tanks[0].GetComponent<Variables>().Ammunition;
+            RedMuni_text.text = "" + (int)Current_Tanks[1].GetComponent<Variables>().Ammunition;
 
-            if(Current_Tanks[0].GetComponent<Tank_Behaviour>().isDead == true) // When Blue dies
+            if(Current_Tanks[0].GetComponent<Variables>().isDead == true) // When Blue dies
             {
-                Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count++;
-                Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count + " - " + Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count + " BLUE";
+                Current_Tanks[1].GetComponent<Variables>().Win_Count++;
+                Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Variables>().Win_Count + " - " + Current_Tanks[0].GetComponent<Variables>().Win_Count + " BLUE";
                 Message.text = "Red Wins";
                 Current_Tanks[1].SetActive(false);
                 NextRound_Button.gameObject.SetActive(true);
-                Current_Tanks[0].GetComponent<Tank_Behaviour>().isDead = false;
+                Current_Tanks[0].GetComponent<Variables>().Current_Point = 0;
+                Current_Tanks[0].GetComponent<Variables>().Ammunition = 0;
+                BlueMuni_text.gameObject.SetActive(false);
+                RedMuni_text.gameObject.SetActive(false);
+
+                Current_Tanks[0].GetComponent<Variables>().isDead = false;
             }
-            if (Current_Tanks[1].GetComponent<Tank_Behaviour>().isDead == true) // When Red dies
+            if (Current_Tanks[1].GetComponent<Variables>().isDead == true) // When Red dies
             {
-                Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count++;
-                Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Tank_Behaviour>().Win_Count + " - " + Current_Tanks[0].GetComponent<Tank_Behaviour>().Win_Count + " BLUE";
+                Current_Tanks[0].GetComponent<Variables>().Win_Count++;
+                Victory_count.text = "RED " + Current_Tanks[1].GetComponent<Variables>().Win_Count + " - " + Current_Tanks[0].GetComponent<Variables>().Win_Count + " BLUE";
                 Message.text = "Blue Wins";
                 Current_Tanks[0].SetActive(false);
                 NextRound_Button.gameObject.SetActive(true);
-                Current_Tanks[1].GetComponent<Tank_Behaviour>().isDead = false;
+                Current_Tanks[0].GetComponent<Variables>().Ammunition = 0;
+                BlueMuni_text.gameObject.SetActive(false);
+                RedMuni_text.gameObject.SetActive(false);
+
+                Current_Tanks[1].GetComponent<Variables>().isDead = false;
             }
 
             for(int i = 0; i < 2; i++)
             {
-                if(Current_Tanks[i].GetComponent<Tank_Behaviour>().Win_Count >= 3)
+                if(Current_Tanks[i].GetComponent<Variables>().Win_Count >= 3)
                 {
-                    if (Current_Tanks[i].GetComponent<Tank_Behaviour>().isBlue)
+                    if (Current_Tanks[i].name == "BlueTank")
                         Message.text = "Blue wins the game";
-                    else
+                    else if(Current_Tanks[i].name == "RedTank")
                         Message.text = "Red wins the game";
 
                     NextRound_Button.gameObject.SetActive(false);
@@ -151,12 +147,14 @@ public class Game_man : MonoBehaviour
     {
         num_Rounds++;
 
-        Current_Tanks[0].GetComponent<Tank_Behaviour>().Current_HP = Current_Tanks[0].GetComponent<Tank_Behaviour>().HP;
-        Current_Tanks[1].GetComponent<Tank_Behaviour>().Current_HP = Current_Tanks[1].GetComponent<Tank_Behaviour>().HP;
+        Current_Tanks[0].GetComponent<Variables>().Current_HP = Current_Tanks[0].GetComponent<Variables>().HP;
+        Current_Tanks[1].GetComponent<Variables>().Current_HP = Current_Tanks[1].GetComponent<Variables>().HP;
         Current_Tanks[0].transform.position = Blue_Spawnpoints[1].transform.position;
         Current_Tanks[1].transform.position = Red_Spawnpoints[1].transform.position;
-        Current_Tanks[0].GetComponent<Tank_Behaviour>().isDead = false;
-        Current_Tanks[1].GetComponent<Tank_Behaviour>().isDead = false;
+        Current_Tanks[0].GetComponent<Variables>().isDead = false;
+        Current_Tanks[1].GetComponent<Variables>().isDead = false;
+        BlueMuni_text.gameObject.SetActive(true);
+        RedMuni_text.gameObject.SetActive(true);
         Current_Tanks[0].SetActive(true);
         Current_Tanks[1].SetActive(true);
 

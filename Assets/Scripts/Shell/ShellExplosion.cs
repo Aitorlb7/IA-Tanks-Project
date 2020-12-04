@@ -38,7 +38,7 @@ namespace Complete
                 targetRigidbody.AddExplosionForce (m_ExplosionForce, transform.position, m_ExplosionRadius);
 
                 // Find the TankHealth script associated with the rigidbody.
-                Tank_Behaviour targetHealth = targetRigidbody.GetComponent<Tank_Behaviour> ();
+                Variables targetHealth = targetRigidbody.GetComponent<Variables> ();
 
                 // If there is no TankHealth script attached to the gameobject, go on to the next collider.
                 if (!targetHealth)
@@ -84,7 +84,7 @@ namespace Complete
             float damage = relativeDistance * m_MaxDamage;
 
             // Make sure that the minimum damage is always 0.
-            damage = Mathf.Max (0f, damage);
+            damage = Mathf.Max (0f, damage * 0.5f);
 
             return damage;
         }

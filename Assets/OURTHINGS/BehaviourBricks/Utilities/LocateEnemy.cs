@@ -20,6 +20,9 @@ public class LocateEnemy : GOAction
     [OutParam("Ammunition")]
     public int Ammo;
 
+    [OutParam("IsEmpty")]
+    public bool IsEmpty;
+
     // Start is called before the first frame update
     public override void OnStart()
     {
@@ -32,8 +35,11 @@ public class LocateEnemy : GOAction
 
     // Update is called once per frame
     public override TaskStatus OnUpdate()
+
     {
         Ammo = gameObject.GetComponent<Variables>().Ammunition;
+        IsEmpty = gameObject.GetComponent<Variables>().IsEmpty;
+
         return TaskStatus.COMPLETED;
     }
 }

@@ -10,9 +10,12 @@ public class tankHasAmmo : ConditionBase
     [InParam("Ammunition")]
     private int Ammo;
 
+    [InParam("IsEmpty")]
+    public bool IsEmpty;
+
     public override bool Check()
     {
         Debug.Log(Ammo);
-        return Ammo > 0;
+        return IsEmpty == false;
     }
 }
