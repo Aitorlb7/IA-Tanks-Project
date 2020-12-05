@@ -24,9 +24,15 @@ public class setNewDestination : GOAction
     [Help("If raycast hit rotate the tank")]
     public bool rotate;
 
+    [InParam("newDirection")]
+    public Vector3 newDirection;
+
+
     [OutParam("WanderTarget")]
     [Help("New destination for the tank")]
     public Vector3 wanderTarget;
+
+
 
     public override void OnStart()
     {
@@ -56,9 +62,10 @@ public class setNewDestination : GOAction
         }
         else if (rotate)
         {
-            localRandomTarget = new Vector3(UnityEngine.Random.Range(-1.0f, 1.0f), 0, 0);
+            localRandomTarget = newDirection;
             localRandomTarget.Normalize();
-            nextCheck = Time.time + 0.7f;
+
+            rotate = false;
         }
         Vector3 worldRandomTarget = gameObject.transform.TransformPoint(localRandomTarget);
         worldRandomTarget.y = 0f;
